@@ -134,4 +134,5 @@ foreach ($animationRoot in @($walkOutput, $strikeOutput)) {
     $westSprite.Dispose()
   }
 }
+& (Join-Path $PSScriptRoot 'build-south-walk-override.ps1')
 Write-Output 'Created 24 walk sprites and 24 strike sprites.'
