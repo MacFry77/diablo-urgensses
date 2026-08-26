@@ -121,6 +121,92 @@ const player = createMedic();
 player.position.set(0, 0, 4.8);
 scene.add(player);
 
+function createPatient() {
+  const patient = new THREE.Group();
+  const gown = new THREE.MeshStandardMaterial({ color: 0x6a3847, roughness: 0.9 });
+  const infectedSkin = new THREE.MeshStandardMaterial({ color: 0x91a76a, roughness: 0.9 });
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.8, 5, 10), gown);
+  body.position.y = 1.08;
+  body.castShadow = true;
+  patient.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), infectedSkin);
+  head.position.y = 1.93;
+  head.castShadow = true;
+  patient.add(head);
+
+  const aura = new THREE.Mesh(
+    new THREE.RingGeometry(0.58, 0.75, 28),
+    new THREE.MeshBasicMaterial({ color: 0xc82d49, transparent: true, opacity: 0.5, side: THREE.DoubleSide }),
+  );
+  aura.rotation.x = -Math.PI / 2;
+  aura.position.y = 0.03;
+  patient.add(aura);
+  patient.userData = { body, head, aura, crisis: 100, state: 'altered', phase: Math.random() * 10 };
+  return patient;
+}
+
+const patient = createPatient();
+patient.position.set(4.2, 0, 0.5);
+scene.add(patient);
+
+const patientStatus = document.querySelector('#patient-status');
+const crisisFill = document.querySelector('#crisis-fill');
+const crisisLabel = document.querySelector('#crisis-label');
+const objectiveText = document.querySelector('.objective');
+const stabilizeButton = document.querySelector('#stabilize');
+const effects = [];
+let stabilizeCooldown = 0;
+
+function updatePatientStatus() {
+  const { crisis, state } = patient.userData;
+  crisisFill.style.width = `${Math.max(0, crisis)}%`;
+  if (state === 'altered') crisisLabel.textContent = `Crise ${Math.max(0, crisis)} %`;
+  if (state === 'healed') {
+    patientStatus.classList.add('healed');
+    patientStatus.querySelector('p').textContent = 'Patient stabilisé';
+    crisisLabel.textContent = 'Évacuation en cours';
+  }
+  if (state === 'gone') patientStatus.classList.add('gone');
+}
+
+function healingPulse(origin) {
+  const pulse = new THREE.Mesh(
+    new THREE.RingGeometry(0.25, 0.38, 32),
+    new THREE.MeshBasicMaterial({ color: 0x70f1d0, transparent: true, opacity: 0.95, side: THREE.DoubleSide }),
+  );
+  pulse.rotation.x = -Math.PI / 2;
+  pulse.position.copy(origin).setY(0.08);
+  scene.add(pulse);
+  effects.push({ mesh: pulse, age: 0 });
+}
+
+function stabilize() {
+  if (stabilizeCooldown > 0 || patient.userData.state !== 'altered') return;
+  const distance = player.position.distanceTo(patient.position);
+  if (distance > 3.1) {
+    objectiveText.innerHTML = '<span>Hors de portée</span>Approchez-vous du patient';
+    return;
+  }
+
+  stabilizeCooldown = 0.65;
+  stabilizeButton.classList.add('cooldown');
+  player.rotation.y = Math.atan2(patient.position.x - player.position.x, patient.position.z - player.position.z);
+  patient.userData.crisis -= 34;
+  healingPulse(patient.position);
+
+  if (patient.userData.crisis <= 0) {
+    patient.userData.crisis = 0;
+    patient.userData.state = 'healed';
+    patient.userData.body.material.color.setHex(0x6b9ba1);
+    patient.userData.head.material.color.setHex(0xc99573);
+    patient.userData.aura.material.color.setHex(0x56e6bc);
+    objectiveText.innerHTML = '<span>Patient stabilisé</span>Accompagnez son évacuation';
+  } else {
+    objectiveText.innerHTML = '<span>Stabilisation</span>Continuez le protocole de soin';
+  }
+  updatePatientStatus();
+}
+
 const marker = new THREE.Mesh(
   new THREE.RingGeometry(0.28, 0.42, 24),
   new THREE.MeshBasicMaterial({ color: 0x72f0d0, transparent: true, opacity: 0.75, side: THREE.DoubleSide }),
@@ -156,8 +242,12 @@ function setTarget(event) {
 }
 
 canvas.addEventListener('pointerdown', setTarget);
-window.addEventListener('keydown', (event) => keys.add(event.key.toLowerCase()));
+window.addEventListener('keydown', (event) => {
+  keys.add(event.key.toLowerCase());
+  if (event.key === '1' && !event.repeat) stabilize();
+});
 window.addEventListener('keyup', (event) => keys.delete(event.key.toLowerCase()));
+stabilizeButton.addEventListener('click', stabilize);
 
 const clock = new THREE.Clock();
 const velocity = new THREE.Vector3();
@@ -198,6 +288,56 @@ function updatePlayer(delta) {
   } else player.position.y *= 0.82;
 }
 
+function updatePatient(delta) {
+  const data = patient.userData;
+  data.aura.rotation.z += delta * (data.state === 'altered' ? 1.8 : 0.7);
+  data.aura.material.opacity = 0.35 + Math.sin(clock.elapsedTime * 4 + data.phase) * 0.15;
+
+  if (data.state === 'altered') {
+    const towardPlayer = new THREE.Vector3().subVectors(player.position, patient.position).setY(0);
+    if (towardPlayer.length() > 1.75) {
+      towardPlayer.normalize();
+      const nextX = patient.position.x + towardPlayer.x * delta * 1.05;
+      const nextZ = patient.position.z + towardPlayer.z * delta * 1.05;
+      if (!blocked(nextX, patient.position.z)) patient.position.x = nextX;
+      if (!blocked(patient.position.x, nextZ)) patient.position.z = nextZ;
+      patient.rotation.y = Math.atan2(towardPlayer.x, towardPlayer.z);
+      patient.position.y = Math.abs(Math.sin(clock.elapsedTime * 6 + data.phase)) * 0.035;
+    }
+  }
+
+  if (data.state === 'healed') {
+    const exit = new THREE.Vector3(0, 0, 9.8);
+    const toExit = exit.sub(patient.position).setY(0);
+    if (toExit.length() < 0.35) {
+      data.state = 'gone';
+      patient.visible = false;
+      objectiveText.innerHTML = '<span>Zone sécurisée</span>Patient évacué — mission accomplie';
+      updatePatientStatus();
+    } else {
+      toExit.normalize();
+      patient.position.addScaledVector(toExit, delta * 1.7);
+      patient.rotation.y = Math.atan2(toExit.x, toExit.z);
+      patient.position.y = Math.abs(Math.sin(clock.elapsedTime * 7)) * 0.03;
+    }
+  }
+}
+
+function updateEffects(delta) {
+  for (let index = effects.length - 1; index >= 0; index -= 1) {
+    const effect = effects[index];
+    effect.age += delta;
+    effect.mesh.scale.setScalar(1 + effect.age * 5);
+    effect.mesh.material.opacity = Math.max(0, 1 - effect.age * 1.5);
+    if (effect.age > 0.7) {
+      scene.remove(effect.mesh);
+      effect.mesh.geometry.dispose();
+      effect.mesh.material.dispose();
+      effects.splice(index, 1);
+    }
+  }
+}
+
 function resize() {
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
@@ -217,6 +357,10 @@ function animate() {
   resize();
   const delta = Math.min(clock.getDelta(), 0.04);
   updatePlayer(delta);
+  updatePatient(delta);
+  updateEffects(delta);
+  stabilizeCooldown = Math.max(0, stabilizeCooldown - delta);
+  if (stabilizeCooldown === 0) stabilizeButton.classList.remove('cooldown');
   marker.material.opacity = 0.5 + Math.sin(clock.elapsedTime * 5) * 0.25;
   renderer.render(scene, camera);
 }

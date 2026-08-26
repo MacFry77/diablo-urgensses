@@ -13,7 +13,10 @@ Le prototype 0.1 contient actuellement :
 - un mannequin d'Urgentiste Déchoc ;
 - le déplacement au clic ou avec ZQSD/WASD ;
 - des collisions simples avec les murs et le mobilier ;
-- une première interface de vie, d'énergie et de capacités.
+- une première interface de vie, d'énergie et de capacités ;
+- un patient altéré qui se rapproche du joueur ;
+- une jauge de crise et une capacité de stabilisation non létale ;
+- la guérison, le passage en PNJ allié invincible et l'évacuation automatique du patient.
 
 Pour le lancer localement :
 

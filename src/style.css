@@ -63,8 +63,20 @@ h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(27px, 4vw, 44
 .level small { display: block; color: #8eadad; font-size: 8px; letter-spacing: .12em; }
 .level b { font-family: 'Barlow Condensed', sans-serif; font-size: 29px; color: #f3cf70; }
 
+.patient-status { position: absolute; left: 50%; top: 24px; width: min(260px, 34vw); padding: 9px 12px; transform: translateX(-50%); border: 1px solid #dc4a5466; border-radius: 8px; background: #130b0de8; text-align: center; box-shadow: 0 8px 30px #0008; transition: .35s; }
+.patient-status p { margin: 0 0 6px; color: #ffd9d6; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+.patient-status div { height: 7px; overflow: hidden; border-radius: 3px; background: #020708; }
+.patient-status i { display: block; width: 100%; height: 100%; background: linear-gradient(90deg, #7b1423, #ef4650); transition: width .25s; }
+.patient-status span { display: block; margin-top: 4px; color: #caa6a5; font-size: 9px; }
+.patient-status.healed { border-color: #73e2c766; background: #071b18e8; }
+.patient-status.healed p { color: #9ef5df; }
+.patient-status.healed i { background: #34c9a2; }
+.patient-status.gone { opacity: 0; transform: translate(-50%, -10px); }
+
 .abilities { position: absolute; left: 50%; bottom: 24px; display: flex; gap: 8px; transform: translateX(-50%); }
 .abilities button { position: relative; width: 78px; height: 64px; border: 1px solid #78ddc55b; border-radius: 8px; background: #0b2228e8; color: #e7f7f2; box-shadow: 0 8px 24px #0008; }
+.abilities button:not(.locked):hover { border-color: #9ef5df; background: #12363d; cursor: pointer; }
+.abilities button.cooldown { opacity: .5; pointer-events: none; }
 .abilities kbd { position: absolute; left: 5px; top: 4px; color: #f3cf70; font-size: 11px; }
 .abilities span { display: block; padding-top: 15px; font-size: 9px; line-height: 1.1; }
 .abilities .locked { opacity: .45; filter: grayscale(1); }
@@ -83,4 +95,5 @@ h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(27px, 4vw, 44
   .abilities { right: 10px; left: auto; bottom: 12px; transform: none; }
   .abilities button { width: 54px; height: 54px; }
   .abilities span { display: none; }
+  .patient-status { top: 70px; width: 190px; }
 }
