@@ -94,6 +94,24 @@ Direction visuelle validée : scrubs bleu marine simples, blouse blanche ouverte
 - charge, poussée et contrôle des patients altérés ;
 - protection des alliés.
 
+#### Styles d'équipement du Déchoc
+
+L'Urgentiste Déchoc pourra choisir entre trois configurations qui modifient son rythme de combat :
+
+| Configuration | Style | Stabilisation par impact | Vitesse | Défense |
+| --- | --- | --- | --- | --- |
+| Une main et bouclier | équilibré | moyenne | moyenne | élevée |
+| Arme à deux mains | impact lourd | très élevée | lente | faible |
+| Deux armes à une main | agressif et mobile | faible | très rapide | faible |
+
+**Une main et bouclier** : scalpel thérapeutique et brancard replié en bouclier. Cette configuration permet le blocage frontal, la parade, la poussée et la protection temporaire d'un patient stabilisé.
+
+**Deux mains** : pied à perfusion télescopique renforcé utilisé comme un bâton médical. Ses grands balayages, frappes chargées et ondes de stabilisation sont lents mais puissants. Un brancard-bélier tenu à deux mains reste une variante possible.
+
+**Deux armes à une main** : scalpel thérapeutique et injecteur automatique. Les enchaînements sont rapides et appliquent de nombreux petits effets de stabilisation, au prix d'une puissance unitaire et d'une défense réduites. Les doubles scalpels et doubles injecteurs pourront devenir des variantes à débloquer.
+
+Dans la première version, le changement de configuration s'effectuera depuis l'inventaire, hors combat.
+
 ### Urgentiste SMUR
 
 Archétype : combattant mobile à distance.
