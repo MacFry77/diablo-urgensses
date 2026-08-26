@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#091318" />
+    <title>Diablo Urgensses — Prototype</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="game" aria-label="Prototype 3D de Diablo Urgensses">
+      <canvas id="scene"></canvas>
+
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Prototype 0.1</p>
+          <h1>Diablo Urgensses</h1>
+        </div>
+        <div class="objective">
+          <span>Objectif</span>
+          Explorez la zone de déchocage
+        </div>
+      </header>
+
+      <section class="status" aria-label="État du personnage">
+        <div class="portrait" aria-hidden="true">✚</div>
+        <div class="meters">
+          <strong>Urgentiste Déchoc</strong>
+          <div class="meter health"><i></i><span>100 / 100</span></div>
+          <div class="meter energy"><i></i><span>80 / 80</span></div>
+        </div>
+        <div class="level"><small>NIVEAU</small><b>1</b></div>
+      </section>
+
+      <section class="abilities" aria-label="Capacités">
+        <button type="button"><kbd>1</kbd><span>Stabilisation</span></button>
+        <button type="button"><kbd>2</kbd><span>Charge brancard</span></button>
+        <button type="button" class="locked"><kbd>3</kbd><span>Niveau 2</span></button>
+      </section>
+
+      <aside class="help">
+        <p><b>Clic gauche</b> se déplacer</p>
+        <p><b>ZQSD / WASD</b> déplacement direct</p>
+      </aside>
+
+      <div id="loading" class="loading">Préparation du service…</div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

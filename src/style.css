@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;600;700&display=swap');
+
+:root {
+  color: #eef8f6;
+  background: #071014;
+  font-family: Inter, system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; overflow: hidden; }
+button { font: inherit; }
+
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 540px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #163039, #071014 70%);
+}
+
+#scene { display: block; width: 100%; height: 100%; outline: none; }
+
+.topbar {
+  position: absolute;
+  inset: 22px 26px auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+  text-shadow: 0 2px 16px #000;
+}
+
+.eyebrow, h1 { margin: 0; }
+.eyebrow { color: #73e2c7; font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(27px, 4vw, 44px); letter-spacing: .025em; text-transform: uppercase; }
+.objective { padding: 10px 14px; border: 1px solid #ffffff24; border-radius: 7px; background: #071217c9; font-size: 13px; }
+.objective span { display: block; margin-bottom: 3px; color: #73e2c7; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
+.status {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  display: grid;
+  grid-template-columns: 56px minmax(190px, 260px) 48px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #79c9bd3d;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #071318ee, #0b2026dd);
+  box-shadow: 0 10px 40px #0009;
+}
+.portrait { display: grid; place-items: center; width: 56px; height: 56px; border: 2px solid #77ddc4; border-radius: 50%; background: #12343b; color: #9ef5df; font-size: 27px; }
+.meters strong { display: block; margin-bottom: 7px; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; }
+.meter { position: relative; height: 10px; margin-top: 5px; overflow: hidden; border-radius: 2px; background: #020708; }
+.meter i { display: block; width: 100%; height: 100%; }
+.meter span { position: absolute; inset: -2px 5px auto auto; font-size: 8px; font-style: normal; }
+.health i { background: linear-gradient(90deg, #7d1421, #d7353f); }
+.energy i { background: linear-gradient(90deg, #126f7d, #25b9bc); }
+.level { text-align: center; }
+.level small { display: block; color: #8eadad; font-size: 8px; letter-spacing: .12em; }
+.level b { font-family: 'Barlow Condensed', sans-serif; font-size: 29px; color: #f3cf70; }
+
+.abilities { position: absolute; left: 50%; bottom: 24px; display: flex; gap: 8px; transform: translateX(-50%); }
+.abilities button { position: relative; width: 78px; height: 64px; border: 1px solid #78ddc55b; border-radius: 8px; background: #0b2228e8; color: #e7f7f2; box-shadow: 0 8px 24px #0008; }
+.abilities kbd { position: absolute; left: 5px; top: 4px; color: #f3cf70; font-size: 11px; }
+.abilities span { display: block; padding-top: 15px; font-size: 9px; line-height: 1.1; }
+.abilities .locked { opacity: .45; filter: grayscale(1); }
+
+.help { position: absolute; right: 24px; bottom: 24px; padding: 8px 12px; border-left: 2px solid #73e2c7; background: #071217b8; color: #b5c9c8; font-size: 11px; pointer-events: none; }
+.help p { margin: 3px 0; }
+.help b { color: white; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; background: #071014; color: #73e2c7; font-family: 'Barlow Condensed', sans-serif; font-size: 24px; letter-spacing: .08em; text-transform: uppercase; transition: opacity .4s; }
+.loading.hidden { opacity: 0; pointer-events: none; }
+
+@media (max-width: 760px) {
+  .objective, .help { display: none; }
+  .topbar { inset: 14px 16px auto; }
+  .status { left: 12px; bottom: 12px; grid-template-columns: 42px minmax(120px, 180px) 34px; gap: 8px; padding: 8px; }
+  .portrait { width: 42px; height: 42px; font-size: 20px; }
+  .abilities { right: 10px; left: auto; bottom: 12px; transform: none; }
+  .abilities button { width: 54px; height: 54px; }
+  .abilities span { display: none; }
+}

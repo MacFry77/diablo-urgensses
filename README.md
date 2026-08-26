@@ -4,6 +4,25 @@ Nom de travail d'un action-RPG isométrique original dans lequel des urgentistes
 
 > Ce projet s'inspire du genre action-RPG isométrique, mais n'utilisera aucun nom, personnage, monstre, graphisme, son ou autre élément appartenant à la licence Diablo.
 
+## Prototype jouable
+
+Le prototype 0.1 contient actuellement :
+
+- une salle de déchocage 3D low-poly ;
+- une caméra isométrique fixe ;
+- un mannequin d'Urgentiste Déchoc ;
+- le déplacement au clic ou avec ZQSD/WASD ;
+- des collisions simples avec les murs et le mobilier ;
+- une première interface de vie, d'énergie et de capacités.
+
+Pour le lancer localement :
+
+```bash
+npm start
+```
+
+Ouvrir ensuite `http://localhost:4173`. Three.js est chargé sous forme de module web depuis jsDelivr ; une connexion Internet est donc nécessaire pour cette première version.
+
 ## Vision
 
 Créer un jeu immédiatement lisible et agréable à contrôler, avec :
