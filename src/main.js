@@ -241,9 +241,41 @@ function createMedic() {
   return medic;
 }
 
-const player = createMedic();
+function createMedicSprite() {
+  const texture = new THREE.TextureLoader().load('/sprites/urgentiste-dechoc-idle-8dir-v2.png');
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.repeat.set(1 / 8, 1);
+  texture.offset.set(0, 0);
+
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    alphaTest: 0.08,
+    depthWrite: false,
+  });
+  const sprite = new THREE.Sprite(material);
+  sprite.name = 'Urgentiste Déchoc — sprite 8 directions';
+  sprite.center.set(0.5, 0.045);
+  sprite.scale.set(2.35, 3.05, 1);
+  sprite.userData = { texture, direction: 0 };
+  return sprite;
+}
+
+const player = createMedicSprite();
 player.position.set(0, 0, 4.8);
 scene.add(player);
+
+const playerShadow = new THREE.Mesh(
+  new THREE.CircleGeometry(0.55, 32),
+  new THREE.MeshBasicMaterial({ color: 0x020607, transparent: true, opacity: 0.34, depthWrite: false }),
+);
+playerShadow.rotation.x = -Math.PI / 2;
+playerShadow.position.set(player.position.x, 0.025, player.position.z);
+playerShadow.scale.set(1, 0.55, 1);
+scene.add(playerShadow);
 
 function createPatient() {
   const patient = new THREE.Group();
@@ -314,7 +346,7 @@ function stabilize() {
 
   stabilizeCooldown = 0.65;
   stabilizeButton.classList.add('cooldown');
-  player.rotation.y = Math.atan2(patient.position.x - player.position.x, patient.position.z - player.position.z);
+  setPlayerDirection(new THREE.Vector3().subVectors(patient.position, player.position));
   patient.userData.crisis -= 34;
   healingPulse(patient.position);
 
@@ -380,6 +412,18 @@ const screenUp = camera.getWorldDirection(new THREE.Vector3()).setY(0).normalize
 const screenRight = new THREE.Vector3().crossVectors(screenUp, camera.up).normalize();
 const speed = 4.2;
 
+function setPlayerDirection(worldDirection) {
+  const horizontal = worldDirection.dot(screenRight);
+  const vertical = worldDirection.dot(screenUp);
+  if (horizontal * horizontal + vertical * vertical < 0.0001) return;
+  const clockwiseFromDown = Math.atan2(-horizontal, -vertical);
+  const direction = ((Math.round(clockwiseFromDown / (Math.PI / 4)) % 8) + 8) % 8;
+  if (direction === player.userData.direction) return;
+  player.userData.direction = direction;
+  player.userData.texture.offset.x = direction / 8;
+  player.userData.texture.needsUpdate = true;
+}
+
 function updatePlayer(delta) {
   move.set(0, 0, 0);
   const up = keys.has('z') || keys.has('w') || keys.has('arrowup');
@@ -413,27 +457,21 @@ function updatePlayer(delta) {
   else velocity.z = 0;
 
   if (velocity.lengthSq() > 0.08) {
-    player.rotation.y = Math.atan2(velocity.x, velocity.z);
-    player.position.y = Math.abs(Math.sin(clock.elapsedTime * 8)) * 0.045;
-    const stride = Math.sin(clock.elapsedTime * 8) * 0.48;
-    player.userData.leftLeg.rotation.x = stride;
-    player.userData.rightLeg.rotation.x = -stride;
-    player.userData.leftArm.rotation.x = -stride * 0.45;
-    if (stabilizeCooldown === 0) player.userData.rightArm.rotation.x = stride * 0.62;
-    player.userData.torso.rotation.z = Math.sin(clock.elapsedTime * 8) * 0.025;
+    setPlayerDirection(velocity);
+    player.position.y = Math.abs(Math.sin(clock.elapsedTime * 8)) * 0.035;
   } else {
     player.position.y *= 0.82;
-    player.userData.leftLeg.rotation.x *= 0.76;
-    player.userData.rightLeg.rotation.x *= 0.76;
-    player.userData.leftArm.rotation.x *= 0.76;
-    if (stabilizeCooldown === 0) player.userData.rightArm.rotation.x *= 0.76;
-    player.userData.torso.rotation.z *= 0.76;
   }
 
   if (stabilizeCooldown > 0) {
     const treatmentMotion = Math.sin((0.65 - stabilizeCooldown) / 0.65 * Math.PI);
-    player.userData.rightArm.rotation.x = -treatmentMotion * 1.1;
+    player.material.rotation = treatmentMotion * 0.035;
+  } else {
+    player.material.rotation *= 0.72;
   }
+
+  playerShadow.position.x = player.position.x;
+  playerShadow.position.z = player.position.z;
 }
 
 function updatePatient(delta) {

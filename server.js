@@ -19,6 +19,11 @@ createServer((request, response) => {
   const relative = normalize(pathname).replace(/^([/\\])+/, '');
   let file = join(root, relative || 'index.html');
 
+  if (!existsSync(file)) {
+    const publicFile = join(root, 'public', relative);
+    if (publicFile.startsWith(join(root, 'public')) && existsSync(publicFile)) file = publicFile;
+  }
+
   if (!file.startsWith(root) || !existsSync(file) || statSync(file).isDirectory()) {
     file = join(root, 'index.html');
   }
