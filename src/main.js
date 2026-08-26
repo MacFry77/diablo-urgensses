@@ -252,14 +252,20 @@ stabilizeButton.addEventListener('click', stabilize);
 const clock = new THREE.Clock();
 const velocity = new THREE.Vector3();
 const move = new THREE.Vector3();
+const screenUp = camera.getWorldDirection(new THREE.Vector3()).setY(0).normalize();
+const screenRight = new THREE.Vector3().crossVectors(screenUp, camera.up).normalize();
 const speed = 4.2;
 
 function updatePlayer(delta) {
   move.set(0, 0, 0);
-  if (keys.has('z') || keys.has('w') || keys.has('arrowup')) move.z -= 1;
-  if (keys.has('s') || keys.has('arrowdown')) move.z += 1;
-  if (keys.has('q') || keys.has('a') || keys.has('arrowleft')) move.x -= 1;
-  if (keys.has('d') || keys.has('arrowright')) move.x += 1;
+  const up = keys.has('z') || keys.has('w') || keys.has('arrowup');
+  const down = keys.has('s') || keys.has('arrowdown');
+  const left = keys.has('q') || keys.has('a') || keys.has('arrowleft');
+  const right = keys.has('d') || keys.has('arrowright');
+  if (up) move.add(screenUp);
+  if (down) move.sub(screenUp);
+  if (left) move.sub(screenRight);
+  if (right) move.add(screenRight);
 
   if (move.lengthSq() > 0) {
     targetActive = false;
