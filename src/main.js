@@ -242,25 +242,26 @@ function createMedic() {
 }
 
 function createMedicSprite() {
-  const texture = new THREE.TextureLoader().load('/sprites/urgentiste-dechoc-idle-8dir-v2.png');
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.magFilter = THREE.LinearFilter;
-  texture.minFilter = THREE.LinearMipmapLinearFilter;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.repeat.set(1 / 8, 1);
-  texture.offset.set(0, 0);
+  const directionNames = ['south', 'south-west', 'west', 'north-west', 'north', 'north-east', 'east', 'south-east'];
+  const textures = directionNames.map((direction) => {
+    const texture = new THREE.TextureLoader().load(`/sprites/urgentiste-dechoc/idle/${direction}.png`);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    return texture;
+  });
 
   const material = new THREE.SpriteMaterial({
-    map: texture,
+    map: textures[0],
     transparent: true,
     alphaTest: 0.08,
     depthWrite: false,
   });
   const sprite = new THREE.Sprite(material);
   sprite.name = 'Urgentiste Déchoc — sprite 8 directions';
-  sprite.center.set(0.5, 0.045);
-  sprite.scale.set(2.35, 3.05, 1);
-  sprite.userData = { texture, direction: 0 };
+  sprite.center.set(0.5, 0.012);
+  sprite.scale.set(1.65, 3.9, 1);
+  sprite.userData = { textures, direction: 0 };
   return sprite;
 }
 
@@ -269,7 +270,7 @@ player.position.set(0, 0, 4.8);
 scene.add(player);
 
 const playerShadow = new THREE.Mesh(
-  new THREE.CircleGeometry(0.55, 32),
+  new THREE.CircleGeometry(0.38, 32),
   new THREE.MeshBasicMaterial({ color: 0x020607, transparent: true, opacity: 0.34, depthWrite: false }),
 );
 playerShadow.rotation.x = -Math.PI / 2;
@@ -420,8 +421,8 @@ function setPlayerDirection(worldDirection) {
   const direction = ((Math.round(clockwiseFromDown / (Math.PI / 4)) % 8) + 8) % 8;
   if (direction === player.userData.direction) return;
   player.userData.direction = direction;
-  player.userData.texture.offset.x = direction / 8;
-  player.userData.texture.needsUpdate = true;
+  player.material.map = player.userData.textures[direction];
+  player.material.needsUpdate = true;
 }
 
 function updatePlayer(delta) {
