@@ -92,28 +92,117 @@ sign.rotation.x = Math.PI / 2;
 
 function createMedic() {
   const medic = new THREE.Group();
-  const navy = new THREE.MeshStandardMaterial({ color: 0x173d4b, roughness: 0.78 });
-  const skin = new THREE.MeshStandardMaterial({ color: 0xc98f68, roughness: 0.85 });
-  const white = new THREE.MeshStandardMaterial({ color: 0xe9f2ec, roughness: 0.8 });
-  const orange = new THREE.MeshStandardMaterial({ color: 0xef6f33, emissive: 0x401208 });
+  const standard = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.78, flatShading: true, ...extra });
+  const navy = standard(0x153c59);
+  const navyDark = standard(0x0d2537);
+  const skin = standard(0xc98f68, { roughness: 0.86 });
+  const white = standard(0xe6e8e3, { roughness: 0.88 });
+  const glove = standard(0x35a8b7, { roughness: 0.65 });
+  const black = standard(0x172025, { roughness: 0.7 });
+  const hair = standard(0x3a251d, { roughness: 0.92 });
+  const steel = standard(0xa9bac0, { metalness: 0.5, roughness: 0.36 });
+  const cyan = standard(0x45e2dc, { emissive: 0x0b6966, emissiveIntensity: 1.5 });
 
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.46, 0.85, 5, 10), navy);
-  body.position.y = 1.15;
-  body.castShadow = true;
-  medic.add(body);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), skin);
-  head.position.y = 2.08;
-  head.castShadow = true;
-  medic.add(head);
-  const vest = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.4, 0.5), orange);
-  vest.position.set(0, 1.35, 0);
-  vest.castShadow = true;
-  medic.add(vest);
-  const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.28, 0.03), white);
-  const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.09, 0.03), white);
-  crossV.position.set(0, 1.38, 0.27);
-  crossH.position.copy(crossV.position);
-  medic.add(crossV, crossH);
+  function mesh(geometry, material, parent = medic) {
+    const item = new THREE.Mesh(geometry, material);
+    item.castShadow = true;
+    item.receiveShadow = true;
+    parent.add(item);
+    return item;
+  }
+
+  const hips = mesh(new THREE.BoxGeometry(0.68, 0.26, 0.38), navyDark);
+  hips.position.y = 0.94;
+
+  const torso = mesh(new THREE.BoxGeometry(0.82, 0.86, 0.42), navy);
+  torso.position.y = 1.43;
+  torso.geometry.translate(0, 0.03, 0);
+
+  // Blouse courte ouverte : deux pans avant, dos blanc uni et manches courtes.
+  const coatBack = mesh(new THREE.BoxGeometry(0.88, 0.83, 0.12), white);
+  coatBack.position.set(0, 1.43, -0.25);
+  const coatLeft = mesh(new THREE.BoxGeometry(0.32, 0.82, 0.1), white);
+  coatLeft.position.set(-0.27, 1.43, 0.25);
+  const coatRight = mesh(new THREE.BoxGeometry(0.32, 0.82, 0.1), white);
+  coatRight.position.set(0.27, 1.43, 0.25);
+
+  const leftLeg = new THREE.Group();
+  const rightLeg = new THREE.Group();
+  leftLeg.position.set(-0.21, 0.91, 0);
+  rightLeg.position.set(0.21, 0.91, 0);
+  medic.add(leftLeg, rightLeg);
+  for (const leg of [leftLeg, rightLeg]) {
+    const scrubLeg = mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.72, 7), navy, leg);
+    scrubLeg.position.y = -0.35;
+    const shoe = mesh(new THREE.BoxGeometry(0.3, 0.18, 0.48), black, leg);
+    shoe.position.set(0, -0.78, 0.08);
+    shoe.geometry.translate(0, 0, 0.04);
+  }
+
+  const leftArm = new THREE.Group();
+  const rightArm = new THREE.Group();
+  leftArm.position.set(-0.52, 1.72, 0);
+  rightArm.position.set(0.52, 1.72, 0);
+  medic.add(leftArm, rightArm);
+  for (const arm of [leftArm, rightArm]) {
+    const sleeve = mesh(new THREE.CylinderGeometry(0.18, 0.16, 0.28, 7), white, arm);
+    sleeve.position.y = -0.12;
+    const forearm = mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.46, 7), skin, arm);
+    forearm.position.y = -0.48;
+    const hand = mesh(new THREE.SphereGeometry(0.14, 7, 6), glove, arm);
+    hand.scale.set(0.9, 1.15, 0.85);
+    hand.position.y = -0.76;
+  }
+  leftArm.rotation.z = -0.08;
+  rightArm.rotation.z = 0.08;
+
+  const neck = mesh(new THREE.CylinderGeometry(0.15, 0.17, 0.22, 8), skin);
+  neck.position.y = 1.99;
+  const head = mesh(new THREE.DodecahedronGeometry(0.31, 1), skin);
+  head.scale.set(0.88, 1.08, 0.92);
+  head.position.y = 2.25;
+  const hairCap = mesh(new THREE.SphereGeometry(0.3, 9, 5, 0, Math.PI * 2, 0, Math.PI * 0.55), hair);
+  hairCap.scale.set(0.9, 0.72, 0.95);
+  hairCap.position.set(0, 2.36, -0.015);
+  const nose = mesh(new THREE.ConeGeometry(0.045, 0.12, 5), skin);
+  nose.rotation.x = Math.PI / 2;
+  nose.position.set(0, 2.25, 0.3);
+
+  const stethoscopeCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-0.17, 1.93, 0.28),
+    new THREE.Vector3(-0.22, 1.76, 0.31),
+    new THREE.Vector3(0, 1.64, 0.32),
+    new THREE.Vector3(0.22, 1.76, 0.31),
+    new THREE.Vector3(0.17, 1.93, 0.28),
+  ]);
+  mesh(new THREE.TubeGeometry(stethoscopeCurve, 18, 0.018, 5, false), black);
+  const chestPiece = mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.035, 10), steel);
+  chestPiece.rotation.x = Math.PI / 2;
+  chestPiece.position.set(0.2, 1.7, 0.34);
+
+  // Brancard-bouclier fixé à l'avant-bras gauche.
+  const shield = new THREE.Group();
+  shield.position.set(-0.04, -0.55, 0.24);
+  shield.rotation.set(-0.12, 0, 0.05);
+  leftArm.add(shield);
+  const shieldPlate = mesh(new THREE.CapsuleGeometry(0.29, 0.62, 4, 8), white, shield);
+  shieldPlate.scale.set(0.72, 1, 0.18);
+  shieldPlate.rotation.z = Math.PI / 2;
+  const shieldRail = mesh(new THREE.TorusGeometry(0.34, 0.035, 6, 12), steel, shield);
+  shieldRail.scale.set(0.76, 1.32, 1);
+  shieldRail.rotation.x = Math.PI / 2;
+
+  // Outil de précision thérapeutique, volontairement lumineux et non réaliste.
+  const tool = new THREE.Group();
+  tool.position.set(0, -0.83, 0.02);
+  rightArm.add(tool);
+  const handle = mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.3, 7), white, tool);
+  handle.position.y = -0.08;
+  const blade = mesh(new THREE.ConeGeometry(0.07, 0.28, 5), cyan, tool);
+  blade.position.y = -0.36;
+  blade.rotation.z = Math.PI;
+
+  medic.userData = { leftLeg, rightLeg, leftArm, rightArm, torso, shield, tool };
   return medic;
 }
 
@@ -291,7 +380,25 @@ function updatePlayer(delta) {
   if (velocity.lengthSq() > 0.08) {
     player.rotation.y = Math.atan2(velocity.x, velocity.z);
     player.position.y = Math.abs(Math.sin(clock.elapsedTime * 8)) * 0.045;
-  } else player.position.y *= 0.82;
+    const stride = Math.sin(clock.elapsedTime * 8) * 0.48;
+    player.userData.leftLeg.rotation.x = stride;
+    player.userData.rightLeg.rotation.x = -stride;
+    player.userData.leftArm.rotation.x = -stride * 0.45;
+    if (stabilizeCooldown === 0) player.userData.rightArm.rotation.x = stride * 0.62;
+    player.userData.torso.rotation.z = Math.sin(clock.elapsedTime * 8) * 0.025;
+  } else {
+    player.position.y *= 0.82;
+    player.userData.leftLeg.rotation.x *= 0.76;
+    player.userData.rightLeg.rotation.x *= 0.76;
+    player.userData.leftArm.rotation.x *= 0.76;
+    if (stabilizeCooldown === 0) player.userData.rightArm.rotation.x *= 0.76;
+    player.userData.torso.rotation.z *= 0.76;
+  }
+
+  if (stabilizeCooldown > 0) {
+    const treatmentMotion = Math.sin((0.65 - stabilizeCooldown) / 0.65 * Math.PI);
+    player.userData.rightArm.rotation.x = -treatmentMotion * 1.1;
+  }
 }
 
 function updatePatient(delta) {
