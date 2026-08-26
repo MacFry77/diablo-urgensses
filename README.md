@@ -84,6 +84,10 @@ Quatre classes complémentaires sont prévues.
 
 Archétype : guerrier de mêlée résistant.
 
+![Concept art validé de l'Urgentiste Déchoc](docs/concept-art/urgentiste-dechoc-v2.png)
+
+Direction visuelle validée : scrubs bleu marine simples, blouse blanche ouverte à manches courtes descendant sur le haut des hanches, stéthoscope, gants bleus et chaussures robustes. La tenue ne comporte ni ceinture extérieure, ni bandes réfléchissantes, ni emblème sur la blouse.
+
 - combat rapproché et stabilisation au contact ;
 - bistouri de précision ;
 - brancard-bouclier ;
