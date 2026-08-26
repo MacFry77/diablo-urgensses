@@ -125,8 +125,12 @@ function createMedic() {
   coatLeft.position.set(-0.27, 1.43, 0.25);
   const coatRight = mesh(new THREE.BoxGeometry(0.32, 0.82, 0.1), white);
   coatRight.position.set(0.27, 1.43, 0.25);
-  const coatShoulders = mesh(new THREE.BoxGeometry(0.9, 0.2, 0.5), white);
-  coatShoulders.position.set(0, 1.78, 0);
+  const coatLeftSide = mesh(new THREE.BoxGeometry(0.12, 0.78, 0.46), white);
+  coatLeftSide.position.set(-0.45, 1.45, 0);
+  const coatRightSide = mesh(new THREE.BoxGeometry(0.12, 0.78, 0.46), white);
+  coatRightSide.position.set(0.45, 1.45, 0);
+  const coatShoulders = mesh(new THREE.BoxGeometry(0.98, 0.3, 0.54), white);
+  coatShoulders.position.set(0, 1.75, 0);
 
   const leftLeg = new THREE.Group();
   const rightLeg = new THREE.Group();
