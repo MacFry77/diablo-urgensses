@@ -40,9 +40,9 @@ Le prototype devra viser une expérience fluide sur un ordinateur portable coura
 
 ## Univers
 
-Une catastrophe inconnue déforme progressivement les lieux associés à l'hôpital. Les urgences deviennent un point de résistance, tandis que les parkings, laboratoires, forêts voisines et rues environnantes sont envahis.
+Un agent infectieux fictif et non identifié altère certains patients et déforme progressivement les lieux associés à l'hôpital. Il ne représente ni le COVID ni aucune maladie réelle. Les urgences deviennent un point de résistance, tandis que les parkings, laboratoires, forêts voisines et rues environnantes sont envahis.
 
-Le ton mélangera aventure sombre, héroïsme médical et humour, sans se moquer des patients ni de situations médicales réelles.
+Les patients altérés sont des victimes à stabiliser, jamais des ennemis à tuer. Le ton mélangera aventure sombre, héroïsme médical et humour, sans se moquer des patients ni de situations médicales réelles.
 
 ### Premiers environnements envisagés
 
@@ -56,54 +56,49 @@ Le ton mélangera aventure sombre, héroïsme médical et humour, sans se moquer
 
 ## Héros jouables
 
-Les noms sont provisoires.
+Quatre classes complémentaires sont prévues.
 
-### Urgentiste interventionnel
+### Urgentiste Déchoc
 
-Archétype : combattant de mêlée résistant.
+Archétype : guerrier de mêlée résistant.
 
-- frappe lourde ;
-- charge ;
-- protection temporaire ;
-- provocation ou contrôle des ennemis proches.
+- combat rapproché et stabilisation au contact ;
+- bistouri de précision ;
+- brancard-bouclier ;
+- charge, poussée et contrôle des patients altérés ;
+- protection des alliés.
 
-### Régulateur tactique
+### Urgentiste SMUR
 
-Archétype : combattant à distance précis.
+Archétype : combattant mobile à distance.
 
-- tir rapide ;
-- attaque perforante ;
-- pièges ;
-- marquage d'une cible prioritaire.
+- lancers de seringues stabilisatrices ;
+- injecteur pneumatique ;
+- tirs à effets variés ;
+- marquage des cibles prioritaires ;
+- balises et déplacements rapides.
 
-### Réanimateur
+### Urgentiste de catastrophe
 
-Archétype : utilisateur d'énergie et soutien offensif.
+Archétype : utilisateur de capacités offensives, défensives et de soutien.
 
-- décharge électrique ;
-- défibrillation en chaîne ;
-- soin limité ;
-- zone de contrôle.
+- aérosols thérapeutiques ;
+- vagues de décontamination ;
+- barrières sanitaires ;
+- améliorations et auras ;
+- grandes zones de stabilisation.
 
-### Toxicologue
+### Urgentiste régulateur
 
-Archétype : dégâts progressifs et affaiblissements.
+Archétype : coordinateur et invocateur.
 
-- projection toxique ;
-- nuage persistant ;
-- antidote ;
-- contamination propagée entre ennemis.
+- appel d'internes agissant comme familiers ;
+- déploiement temporaire d'équipes mobiles ;
+- drones sanitaires ;
+- ambulances et largages de matériel ;
+- passage d'un hélicoptère du SAMU en rase-motte pour un bombardement thérapeutique de grande zone.
 
-### Médecin catastrophe
-
-Archétype : attaques de zone et soutien tactique.
-
-- projectile explosif improvisé ;
-- balise de ravitaillement ;
-- onde de choc ;
-- amélioration temporaire du groupe.
-
-Le premier prototype n'utilisera que l'Urgentiste interventionnel.
+Le premier prototype utilisera l'Urgentiste Déchoc.
 
 ## Boucle de jeu
 
@@ -128,11 +123,25 @@ Le premier prototype n'utilisera que l'Urgentiste interventionnel.
 
 ### Principes
 
+- arsenal entièrement non létal composé d'outils hospitaliers détournés ;
+- absence de sang et d'animation de mort pour les patients ;
+- jauge de crise ou d'altération à la place des points de vie ennemis ;
 - réponse immédiate des commandes ;
 - attaques clairement télégraphiées ;
 - collisions et zones d'effet compréhensibles ;
-- ennemis différenciés par leur silhouette et leur comportement ;
+- patients altérés différenciés par leur silhouette et leur comportement ;
 - peu de pouvoirs au début, mais chacun doit être utile et satisfaisant.
+
+### Arsenal médical
+
+- bistouri de précision pour la stabilisation au contact ;
+- seringues stabilisatrices à distance ;
+- diffuseurs de gaz et d'aérosols thérapeutiques ;
+- défibrillateur et poches de perfusion ;
+- garrot tactique et brancard-bouclier ;
+- drones, ambulances, équipes médicales et hélicoptère du SAMU.
+
+Les impacts seront représentés par des effets lumineux, la dissipation de l'aura infectieuse et des animations de stabilisation.
 
 ## Progression
 
@@ -173,16 +182,35 @@ Emplacements envisagés :
 
 Les raretés et statistiques aléatoires ne seront ajoutées qu'après validation du combat de base.
 
-## Ennemis
+## Patients altérés et autres adversaires
 
-Le bestiaire sera original et lié à la déformation du monde, sans représenter directement des patients réels.
+Le bestiaire sera original et lié à l'agent infectieux fictif. Les humains contaminés seront appelés **patients altérés** plutôt que zombies.
+
+Leur jauge représente leur niveau de crise. Lorsqu'elle atteint zéro :
+
+1. le patient est stabilisé et retrouve une apparence saine ;
+2. il devient immédiatement non ciblable, non cliquable et invincible ;
+3. il reste brièvement désorienté ;
+4. il devient un PNJ allié ;
+5. il rejoint automatiquement une sortie sécurisée et quitte la zone.
+
+Sauver un patient peut accorder de l'expérience, améliorer le score de mission ou fournir une ressource médicale.
+
+### Profils envisagés
+
+- patient fébrile : lent et résistant ;
+- patient agité : rapide et imprévisible ;
+- patient aérosolisant : crée des zones dangereuses ;
+- patient en détresse : doit être stabilisé rapidement ;
+- patient lourdement altéré : adversaire d'élite ;
+- entités non humaines liées à la contamination, pour diversifier le bestiaire.
 
 ### Prototype
 
-- créature de mêlée lente ;
-- créature rapide et fragile ;
-- ennemi à distance ;
-- mini-boss disposant de deux attaques spéciales.
+- patient altéré de mêlée lent ;
+- patient altéré rapide et fragile ;
+- patient altéré à distance ;
+- mini-boss disposant de deux capacités spéciales.
 
 ### Conception des boss
 
@@ -198,7 +226,7 @@ Chaque boss devra proposer :
 
 ### Contenu
 
-- une classe : Urgentiste interventionnel ;
+- une classe : Urgentiste Déchoc ;
 - une petite zone dans l'hôpital ;
 - déplacement, caméra et collisions ;
 - attaque principale ;
@@ -216,7 +244,7 @@ Chaque boss devra proposer :
 - multijoueur ;
 - monde ouvert ;
 - génération procédurale complète ;
-- cinq classes terminées ;
+- quatre classes terminées ;
 - nombreux objets aléatoires ;
 - boutique ou achats intégrés ;
 - versions mobiles natives.
