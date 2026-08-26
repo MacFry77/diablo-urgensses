@@ -73,4 +73,12 @@ $inputAtlas = Join-Path $repositoryRoot 'public\sprites\urgentiste-dechoc-idle-8
 $outputDirectory = Join-Path $repositoryRoot 'public\sprites\urgentiste-dechoc\idle'
 New-Item -ItemType Directory -Force $outputDirectory | Out-Null
 [SpriteSplitter]::Split($inputAtlas, $outputDirectory)
+$eastPath = Join-Path $outputDirectory 'east.png'
+$westPath = Join-Path $outputDirectory 'west.png'
+$eastSprite = [System.Drawing.Bitmap]::FromFile($eastPath)
+$westSprite = $eastSprite.Clone()
+$eastSprite.Dispose()
+$westSprite.RotateFlip([System.Drawing.RotateFlipType]::RotateNoneFlipX)
+$westSprite.Save($westPath, [System.Drawing.Imaging.ImageFormat]::Png)
+$westSprite.Dispose()
 Write-Output "Eight isolated idle sprites created in $outputDirectory"
