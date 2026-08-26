@@ -88,16 +88,18 @@ public static class AnimationSpriteBuilder {
             }
             if (maxX < minX || maxY < minY) throw new Exception("Empty animation cell");
             int cropWidth = maxX - minX + 1, cropHeight = maxY - minY + 1;
-            double scale = Math.Min(280.0 / cropWidth, 620.0 / cropHeight);
+            // Every generated cell uses the same source character scale. Keep one
+            // constant factor so gait and attack poses never breathe in size.
+            double scale = 2.0;
             int drawWidth = (int)Math.Round(cropWidth * scale);
             int drawHeight = (int)Math.Round(cropHeight * scale);
-            using (var output = new Bitmap(320, 760, PixelFormat.Format32bppArgb)) {
+            using (var output = new Bitmap(420, 760, PixelFormat.Format32bppArgb)) {
               using (var graphics = Graphics.FromImage(output)) {
                 graphics.Clear(Color.Transparent);
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 graphics.DrawImage(keyed,
-                  new Rectangle((320 - drawWidth) / 2, 752 - drawHeight, drawWidth, drawHeight),
+                  new Rectangle((420 - drawWidth) / 2, 752 - drawHeight, drawWidth, drawHeight),
                   new Rectangle(minX, minY, cropWidth, cropHeight),
                   GraphicsUnit.Pixel);
               }

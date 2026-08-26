@@ -445,6 +445,8 @@ function setPlayerAnimation(animation, frame) {
   if (data.animation === animation && data.frame === frame) return;
   data.animation = animation;
   data.frame = frame;
+  player.scale.x = animation === 'idle' ? 1.65 : 2.155;
+  player.scale.y = 3.9;
   player.material.map = data.animations[animation][data.direction][frame];
   player.material.needsUpdate = true;
 }
