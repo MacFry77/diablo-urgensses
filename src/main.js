@@ -243,16 +243,21 @@ function createMedic() {
 
 function createMedicSprite() {
   const directionNames = ['south', 'south-west', 'west', 'north-west', 'north', 'north-east', 'east', 'south-east'];
-  const textures = directionNames.map((direction) => {
-    const texture = new THREE.TextureLoader().load(`/sprites/urgentiste-dechoc/idle/${direction}.png`);
+  const loadTexture = (path) => {
+    const texture = new THREE.TextureLoader().load(path);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.magFilter = THREE.LinearFilter;
     texture.minFilter = THREE.LinearMipmapLinearFilter;
     return texture;
-  });
+  };
+  const animations = {
+    idle: directionNames.map((direction) => [loadTexture(`/sprites/urgentiste-dechoc/idle/${direction}.png`)]),
+    walk: directionNames.map((direction) => [0, 1, 2].map((frame) => loadTexture(`/sprites/urgentiste-dechoc/walk/${direction}/${frame}.png`))),
+    strike: directionNames.map((direction) => [0, 1, 2].map((frame) => loadTexture(`/sprites/urgentiste-dechoc/strike/${direction}/${frame}.png`))),
+  };
 
   const material = new THREE.SpriteMaterial({
-    map: textures[0],
+    map: animations.idle[0][0],
     transparent: true,
     alphaTest: 0.08,
     depthWrite: false,
@@ -261,7 +266,7 @@ function createMedicSprite() {
   sprite.name = 'Urgentiste Déchoc — sprite 8 directions';
   sprite.center.set(0.5, 0.012);
   sprite.scale.set(1.65, 3.9, 1);
-  sprite.userData = { textures, direction: 0 };
+  sprite.userData = { animations, direction: 0, animation: 'idle', frame: 0 };
   return sprite;
 }
 
@@ -311,8 +316,10 @@ const crisisFill = document.querySelector('#crisis-fill');
 const crisisLabel = document.querySelector('#crisis-label');
 const objectiveText = document.querySelector('.objective');
 const stabilizeButton = document.querySelector('#stabilize');
+const strikeButton = document.querySelector('#strike');
 const effects = [];
 let stabilizeCooldown = 0;
+let strikeTimer = 0;
 
 function updatePatientStatus() {
   const { crisis, state } = patient.userData;
@@ -364,6 +371,12 @@ function stabilize() {
   updatePatientStatus();
 }
 
+function strike() {
+  if (strikeTimer > 0) return;
+  strikeTimer = 0.42;
+  strikeButton.classList.add('cooldown');
+}
+
 const marker = new THREE.Mesh(
   new THREE.RingGeometry(0.28, 0.42, 24),
   new THREE.MeshBasicMaterial({ color: 0x72f0d0, transparent: true, opacity: 0.75, side: THREE.DoubleSide }),
@@ -402,9 +415,11 @@ canvas.addEventListener('pointerdown', setTarget);
 window.addEventListener('keydown', (event) => {
   keys.add(event.key.toLowerCase());
   if (event.key === '1' && !event.repeat) stabilize();
+  if ((event.key === '2' || event.code === 'Space') && !event.repeat) strike();
 });
 window.addEventListener('keyup', (event) => keys.delete(event.key.toLowerCase()));
 stabilizeButton.addEventListener('click', stabilize);
+strikeButton.addEventListener('click', strike);
 
 const clock = new THREE.Clock();
 const velocity = new THREE.Vector3();
@@ -421,7 +436,16 @@ function setPlayerDirection(worldDirection) {
   const direction = ((Math.round(clockwiseFromDown / (Math.PI / 4)) % 8) + 8) % 8;
   if (direction === player.userData.direction) return;
   player.userData.direction = direction;
-  player.material.map = player.userData.textures[direction];
+  player.material.map = player.userData.animations[player.userData.animation][direction][player.userData.frame];
+  player.material.needsUpdate = true;
+}
+
+function setPlayerAnimation(animation, frame) {
+  const data = player.userData;
+  if (data.animation === animation && data.frame === frame) return;
+  data.animation = animation;
+  data.frame = frame;
+  player.material.map = data.animations[animation][data.direction][frame];
   player.material.needsUpdate = true;
 }
 
@@ -459,16 +483,15 @@ function updatePlayer(delta) {
 
   if (velocity.lengthSq() > 0.08) {
     setPlayerDirection(velocity);
-    player.position.y = Math.abs(Math.sin(clock.elapsedTime * 8)) * 0.035;
+    if (strikeTimer <= 0) setPlayerAnimation('walk', Math.floor(clock.elapsedTime * 9) % 3);
   } else {
     player.position.y *= 0.82;
+    if (strikeTimer <= 0) setPlayerAnimation('idle', 0);
   }
 
-  if (stabilizeCooldown > 0) {
-    const treatmentMotion = Math.sin((0.65 - stabilizeCooldown) / 0.65 * Math.PI);
-    player.material.rotation = treatmentMotion * 0.035;
-  } else {
-    player.material.rotation *= 0.72;
+  if (strikeTimer > 0) {
+    const elapsed = 0.42 - strikeTimer;
+    setPlayerAnimation('strike', Math.min(2, Math.floor(elapsed / 0.14)));
   }
 
   playerShadow.position.x = player.position.x;
@@ -547,7 +570,9 @@ function animate() {
   updatePatient(delta);
   updateEffects(delta);
   stabilizeCooldown = Math.max(0, stabilizeCooldown - delta);
+  strikeTimer = Math.max(0, strikeTimer - delta);
   if (stabilizeCooldown === 0) stabilizeButton.classList.remove('cooldown');
+  if (strikeTimer === 0) strikeButton.classList.remove('cooldown');
   marker.material.opacity = 0.5 + Math.sin(clock.elapsedTime * 5) * 0.25;
   renderer.render(scene, camera);
 }
