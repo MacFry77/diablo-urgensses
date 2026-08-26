@@ -111,25 +111,54 @@ function createMedic() {
     return item;
   }
 
-  const hips = mesh(new THREE.BoxGeometry(0.68, 0.26, 0.38), navyDark);
+  function roundedBox(width, height, depth, radius = 0.08) {
+    const halfW = width / 2;
+    const halfH = height / 2;
+    const shape = new THREE.Shape();
+    shape.moveTo(-halfW + radius, -halfH);
+    shape.lineTo(halfW - radius, -halfH);
+    shape.quadraticCurveTo(halfW, -halfH, halfW, -halfH + radius);
+    shape.lineTo(halfW, halfH - radius);
+    shape.quadraticCurveTo(halfW, halfH, halfW - radius, halfH);
+    shape.lineTo(-halfW + radius, halfH);
+    shape.quadraticCurveTo(-halfW, halfH, -halfW, halfH - radius);
+    shape.lineTo(-halfW, -halfH + radius);
+    shape.quadraticCurveTo(-halfW, -halfH, -halfW + radius, -halfH);
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+      depth: Math.max(0.02, depth - 0.05),
+      bevelEnabled: true,
+      bevelSegments: 2,
+      bevelSize: 0.025,
+      bevelThickness: 0.025,
+      curveSegments: 5,
+    });
+    geometry.center();
+    return geometry;
+  }
+
+  const hips = mesh(new THREE.CapsuleGeometry(0.2, 0.32, 6, 12), navyDark);
+  hips.rotation.z = Math.PI / 2;
+  hips.scale.z = 0.84;
   hips.position.y = 0.94;
 
-  const torso = mesh(new THREE.BoxGeometry(0.82, 0.86, 0.42), navy);
+  const torso = mesh(new THREE.CylinderGeometry(0.4, 0.34, 0.86, 14), navy);
+  torso.scale.z = 0.68;
   torso.position.y = 1.43;
-  torso.geometry.translate(0, 0.03, 0);
 
   // Blouse courte ouverte : deux pans avant, dos blanc uni et manches courtes.
-  const coatBack = mesh(new THREE.BoxGeometry(0.88, 0.83, 0.12), white);
+  const coatBack = mesh(roundedBox(0.86, 0.82, 0.11, 0.12), white);
   coatBack.position.set(0, 1.43, -0.25);
-  const coatLeft = mesh(new THREE.BoxGeometry(0.32, 0.82, 0.1), white);
+  const coatLeft = mesh(roundedBox(0.31, 0.81, 0.1, 0.08), white);
   coatLeft.position.set(-0.27, 1.43, 0.25);
-  const coatRight = mesh(new THREE.BoxGeometry(0.32, 0.82, 0.1), white);
+  const coatRight = mesh(roundedBox(0.31, 0.81, 0.1, 0.08), white);
   coatRight.position.set(0.27, 1.43, 0.25);
-  const coatLeftSide = mesh(new THREE.BoxGeometry(0.12, 0.78, 0.46), white);
+  const coatLeftSide = mesh(roundedBox(0.11, 0.75, 0.43, 0.05), white);
   coatLeftSide.position.set(-0.45, 1.45, 0);
-  const coatRightSide = mesh(new THREE.BoxGeometry(0.12, 0.78, 0.46), white);
+  const coatRightSide = mesh(roundedBox(0.11, 0.75, 0.43, 0.05), white);
   coatRightSide.position.set(0.45, 1.45, 0);
-  const coatShoulders = mesh(new THREE.BoxGeometry(0.98, 0.3, 0.54), white);
+  const coatShoulders = mesh(new THREE.CapsuleGeometry(0.23, 0.52, 6, 14), white);
+  coatShoulders.rotation.z = Math.PI / 2;
+  coatShoulders.scale.z = 0.82;
   coatShoulders.position.set(0, 1.75, 0);
 
   const leftLeg = new THREE.Group();
@@ -138,11 +167,11 @@ function createMedic() {
   rightLeg.position.set(0.21, 0.91, 0);
   medic.add(leftLeg, rightLeg);
   for (const leg of [leftLeg, rightLeg]) {
-    const scrubLeg = mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.72, 7), navy, leg);
+    const scrubLeg = mesh(new THREE.CapsuleGeometry(0.14, 0.48, 6, 12), navy, leg);
     scrubLeg.position.y = -0.35;
-    const shoe = mesh(new THREE.BoxGeometry(0.3, 0.18, 0.48), black, leg);
+    const shoe = mesh(new THREE.CapsuleGeometry(0.13, 0.2, 5, 10), black, leg);
+    shoe.rotation.x = Math.PI / 2;
     shoe.position.set(0, -0.78, 0.08);
-    shoe.geometry.translate(0, 0, 0.04);
   }
 
   const leftArm = new THREE.Group();
@@ -151,26 +180,26 @@ function createMedic() {
   rightArm.position.set(0.52, 1.72, 0);
   medic.add(leftArm, rightArm);
   for (const arm of [leftArm, rightArm]) {
-    const sleeve = mesh(new THREE.CylinderGeometry(0.18, 0.16, 0.28, 7), white, arm);
+    const sleeve = mesh(new THREE.CapsuleGeometry(0.15, 0.08, 5, 12), white, arm);
     sleeve.position.y = -0.12;
-    const forearm = mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.46, 7), skin, arm);
+    const forearm = mesh(new THREE.CapsuleGeometry(0.095, 0.28, 5, 11), skin, arm);
     forearm.position.y = -0.48;
-    const hand = mesh(new THREE.SphereGeometry(0.14, 7, 6), glove, arm);
+    const hand = mesh(new THREE.SphereGeometry(0.13, 12, 9), glove, arm);
     hand.scale.set(0.9, 1.15, 0.85);
     hand.position.y = -0.76;
   }
   leftArm.rotation.z = -0.08;
   rightArm.rotation.z = 0.08;
 
-  const neck = mesh(new THREE.CylinderGeometry(0.15, 0.17, 0.22, 8), skin);
+  const neck = mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.22, 12), skin);
   neck.position.y = 1.99;
-  const head = mesh(new THREE.DodecahedronGeometry(0.31, 1), skin);
+  const head = mesh(new THREE.SphereGeometry(0.31, 16, 12), skin);
   head.scale.set(0.88, 1.08, 0.92);
   head.position.y = 2.25;
-  const hairCap = mesh(new THREE.SphereGeometry(0.3, 9, 5, 0, Math.PI * 2, 0, Math.PI * 0.55), hair);
+  const hairCap = mesh(new THREE.SphereGeometry(0.3, 14, 7, 0, Math.PI * 2, 0, Math.PI * 0.55), hair);
   hairCap.scale.set(0.9, 0.72, 0.95);
   hairCap.position.set(0, 2.36, -0.015);
-  const nose = mesh(new THREE.ConeGeometry(0.045, 0.12, 5), skin);
+  const nose = mesh(new THREE.ConeGeometry(0.04, 0.11, 8), skin);
   nose.rotation.x = Math.PI / 2;
   nose.position.set(0, 2.25, 0.3);
 
